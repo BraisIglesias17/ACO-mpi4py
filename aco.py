@@ -173,14 +173,13 @@ for i in range(0,NUM_ITER,1):
         mapa_win.Unlock(0)
 
     #Establezco una barrera de sincronizacion de procesos
-    #mapa_win.Fence()
     comm.Barrier()
 
-#mapa_win.Fence()
+#Sincronizacion de procesos antes de terminar
 comm.Barrier()    
 
 best_path=np.full((Nfil, Ncol),0,dtype=np.int32)
-best_length=np.full(1,0,dtype=np.int32)
+
 best_path_win.Lock(0)
 best_path_win.Get([best_path,MPI.INT],target_rank=0)
 best_path_win.Unlock(0)
@@ -189,6 +188,8 @@ best_path_win.Unlock(0)
 #Se libera la memoria
 mapa_win.Free()
 comida_win.Free()
+best_path_win.Free()
+best_path.Free()
 
 if miRango==0:
     print(f"\n ----------------- \n EL MEJOR CAMINO ES :\n {best_path} \n Longitud del mejor camino : {np.count_nonzero(best_path == 1)} \n -----------------------------")
